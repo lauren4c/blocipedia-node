@@ -1,0 +1,31 @@
+{
+  "development": {
+    "username": "lauren4c",
+    "password": null,
+    "database": "blocipedia",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "logging": false,
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "lauren4c",
+    "password": null,
+    "database": "blocipedia-test",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "logging": false,
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "jgonsxdedgpgpg",
+    "password": "b01032778177792c05a1a380f3c8c21f9e1823b1f78b144bdaa64ac64e306b1c",
+    "database": "d4lt3rh724hn6h",
+    "host": "ec2-54-225-95-183.compute-1.amazonaws.com",
+    "dialect": "postgres",
+    "logging": false,
+    "operatorsAliases": false,
+    "use_env_variable": "DATABASE_URL",
+    "db": "process.env.postgres://jgonsxdedgpgpg:b01032778177792c05a1a380f3c8c21f9e1823b1f78b144bdaa64ac64e306b1c@ec2-54-225-95-183.compute-1.amazonaws.com:5432/d4lt3rh724hn6h"
+  }
+}

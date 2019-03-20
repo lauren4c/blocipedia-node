@@ -3,9 +3,24 @@
   "version": "1.0.0",
   "description": "A wiki website for users to add, update and create wikis",
   "main": "src/server.js",
+  "repository": "https://github.com/lauren4c/blocipedia-node",
   "scripts": {
-    "test": "export NODE_ENV=test && jasmine"
+    "test": "export NODE_ENV=test && jasmine",
+    "start": "node src/server.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jasmine": "^3.3.1",
+    "request": "^2.88.0"
+  },
+  "dependencies": {
+    "dotenv": "^7.0.0",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "morgan": "^1.9.1",
+    "pg": "^7.9.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^5.1.0"
+  }
 }
