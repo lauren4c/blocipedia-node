@@ -1,0 +1,11 @@
+{
+  "name": "blocipedia-node",
+  "version": "1.0.0",
+  "description": "A wiki website for users to add, update and create wikis",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "export NODE_ENV=test && jasmine"
+  },
+  "author": "",
+  "license": "ISC"
+}
