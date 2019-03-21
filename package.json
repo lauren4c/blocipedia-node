@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "A wiki website for users to add, update and create wikis",
   "main": "src/server.js",
-  "repository": "https://github.com/lauren4c/blocipedia-node",
   "scripts": {
     "test": "export NODE_ENV=test && jasmine",
     "start": "node src/server.js"
