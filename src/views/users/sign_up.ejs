@@ -1,0 +1,41 @@
+<% include ../static/partials/head.ejs %>
+
+<% include ../static/partials/navbar.ejs %>
+<main>
+<% include ../static/partials/messages.ejs %>
+
+<h2>Sign Up</h2>
+   <div class="row">
+     <div class="col-md-8">
+       <form method="POST" action="/users">
+         <div class="form-group">
+           <label>Username:</label>
+           <input type="text" name="username" placeholder="Enter Name" class="form-control"/>
+           <small class="text-muted" id="usernameHelp">Username must be at least 5 characters</small>
+
+         </div>
+         <div class="form-group">
+           <label>Email:</label>
+           <input type="email" name="email" placeholder="Enter Email" class="form-control"/>
+           <small class="text-muted" id="emailHelp">email address must be a valid address</small>
+
+         </div>
+         <div class="form-group">
+           <label>Password:</label>
+           <input type="password" name="password" placeholder="Enter Password" class="form-control"/>
+         </div>
+         <div class="form-group">
+           <label>Password:</label>
+           <input type="password" name="password_conf" placeholder="Enter Password confirmation" class="form-control"/>
+           <small class="text-muted" id="passwordHelp">password must match confirmation below</small>
+
+         </div><br/>
+         <input type="submit" value="Sign Up" class="btn btn-primary"/>
+       </form>
+     </div>
+   </div>
+</main>
+ <% include ../static/partials/baseScripts.ejs %>
+
+</body>
+</html>
