@@ -2,11 +2,11 @@ require("dotenv").config();
 const logger = require("morgan");
 const path = require("path");
 const viewsFolder = path.join(__dirname, "..", "views");
-const passportConfig = require("./passport-config");
 const bodyParser = require("body-parser");
+const expressValidator = require("express-validator");
 const session = require("express-session");
 const flash = require("express-flash");
-const expressValidator = require("express-validator");
+const passportConfig = require("./passport-config");
 
 module.exports = {
   init(app, express) {
