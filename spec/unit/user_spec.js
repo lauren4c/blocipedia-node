@@ -60,14 +60,14 @@ describe("User", () => {
     it("should not create a user with an email already taken", done => {
       // #5
       User.create({
-        username: "exampleUser",
-        email: "user@example.com",
+        username: "exampleUser1",
+        email: "user1@example.com",
         password: "1234567890"
       })
         .then(user => {
           User.create({
-            username: "exampleUser",
-            email: "user@example.com",
+            username: "exampleUser2",
+            email: "user1@example.com",
             password: "nananananananananananananananana BATMAN!"
           })
             .then(user => {

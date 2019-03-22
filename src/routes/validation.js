@@ -1,10 +1,6 @@
 module.exports = {
   validateUser(req, res, next) {
     if (req.method === "POST") {
-      req
-        .checkBody("username", "must be at least 5 characters")
-        .isLength({ min: 5 });
-
       req.checkBody("email", "must be valid").isEmail();
       req
         .checkBody("password", "must be at least 6 characters in length")
