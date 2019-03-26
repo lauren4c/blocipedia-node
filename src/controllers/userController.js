@@ -1,6 +1,7 @@
 const userQueries = require("../db/queries.users.js");
 const passport = require("passport");
 const email = require("../utilities/email.js");
+const User = require("../db/models").User;
 
 module.exports = {
   signUp(req, res, next) {
@@ -13,15 +14,30 @@ module.exports = {
       password: req.body.password,
       passwordConfirmation: req.body.passwordConfirmation
     };
-    userQueries.createUser(newUser, (err, user) => {
-      if (err) {
-        req.flash("error", err);
+    User.findOne({ where: { email: newUser.email } }).then(user => {
+      if (user) {
+        const errors = [
+          {
+            location: "body",
+            param: "email",
+            msg: "is already in use",
+            value: ""
+          }
+        ];
+        req.flash("error", errors);
         res.redirect("/users/sign_up");
       } else {
-        passport.authenticate("local")(req, res, () => {
-          email(newUser.username, newUser.email);
-          req.flash("notice", "You've successfully signed in!");
-          res.redirect("/");
+        userQueries.createUser(newUser, (err, user) => {
+          if (err) {
+            req.flash("error", err);
+            res.redirect("/users/sign_up");
+          } else {
+            // #3
+            passport.authenticate("local")(req, res, () => {
+              req.flash("notice", "You've successfully signed in!");
+              res.redirect("/");
+            });
+          }
         });
       }
     });
@@ -30,7 +46,7 @@ module.exports = {
     res.render("users/sign_in");
   },
   signIn(req, res, next) {
-    passport.authenticate("local")(req, res, function() {
+    passport.authenticate("local")(req, res, () => {
       if (!req.user) {
         req.flash("notice", "Sign in failed. Please try again.");
         res.redirect("/users/sign_in");
