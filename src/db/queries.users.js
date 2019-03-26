@@ -1,4 +1,5 @@
 const User = require("./models").User;
+const Wiki = require("./models").Wiki;
 const bcrypt = require("bcryptjs");
 
 module.exports = {
