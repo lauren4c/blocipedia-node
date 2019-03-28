@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <% include ../static/partials/head.ejs %>
+  </head>
+
+
+    <% include ../static/partials/navbar.ejs %>
+
+    <main class="container">
+
+      <% include ../static/partials/messages.ejs %>
+
+      <% if(currentUser && currentUser.role == 0) { %>
+
+      <h1>Upgrade your Account</h1>
+
+      <form action="/users/upgrade" method="POST">
+        <script
+          src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+          data-key="pk_test_RD46Bdw4PAxNIeqy3VHRHDHz000q0vlUMK"
+          data-amount="1500"
+          data-name="Stripe.com"
+          data-description="Account Upgrade"
+          data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+          data-locale="auto"
+          data-zip-code="true">
+        </script>
+      </form>
+      <% } %>
+    <% if(currentUser && currentUser.role == 1) { %>
+        <h2>Downgrade?</h2>
+        <p>You are a premium user. Would you like to downgrade your account?
+          <form style="display:initial" action="/users/downgrade" method="post">
+            <button type="submit" class="btn btn-danger">Downgrade</button>
+          </form>
+      <% } %>    </main>
+
+    <% include ../static/partials/baseScripts.ejs %>
+
+  </body>
+</html>

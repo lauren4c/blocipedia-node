@@ -88,4 +88,54 @@ describe("routes : users", () => {
       });
     });
   });
+
+  describe("User accessing account", () => {
+    beforeEach(done => {
+      User.create({
+        username: "user",
+        email: "member@user.com",
+        password: "123456",
+        role: 0
+      }).then(user => {
+        request.get(
+          {
+            // mock authentication
+            url: "http://localhost:3000/auth/fake",
+            form: {
+              role: this.user.role, // mock authenticate as a user
+              userId: this.user.id,
+              email: this.user.email,
+              username: this.user.username
+            }
+          },
+          (err, res, body) => {
+            done();
+          }
+        );
+      });
+      describe("GET /users/account", () => {
+        it("should render a view with the upgrade option & credit card pay button", done => {
+          request.get(`${base}account`, (err, res, body) => {
+            expect(err).toBeNull();
+            expect(body).toContain("Upgrade");
+            done();
+          });
+        });
+      });
+      // describe("POST /users/downgrade", () => {
+      //   it("should downgrade user role and redirect", done => {
+      //     User.findOne({ where: { email: "member@premium.com" } })
+      //
+      //       .then(user => {
+      //         expect(user.role).toBe(0);
+      //         done();
+      //       })
+      //       .catch(err => {
+      //         console.log(err);
+      //         done();
+      //       });
+      //   });
+      // });
+    });
+  });
 });

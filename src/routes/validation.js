@@ -1,5 +1,5 @@
 module.exports = {
-  validateUser(req, res, next) {
+  validateUserSignUp(req, res, next) {
     if (req.method === "POST") {
       req.checkBody("email", "must be valid").isEmail();
       req
@@ -16,6 +16,20 @@ module.exports = {
     if (errors) {
       req.flash("error", errors);
       return res.redirect(req.headers.referer);
+    } else {
+      return next();
+    }
+  },
+  validateUserSignIn(req, res, next) {
+    if (req.method === "POST") {
+      req.checkBody("email", "must be valid").isEmail();
+      req.checkBody("password", "must be valid");
+    }
+
+    const errors = req.validationErrors();
+
+    if (errors) {
+      req.flash("error", errors);
     } else {
       return next();
     }

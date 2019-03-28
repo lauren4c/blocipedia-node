@@ -2,6 +2,7 @@ const userQueries = require("../db/queries.users.js");
 const passport = require("passport");
 const email = require("../utilities/email.js");
 const User = require("../db/models").User;
+const payment = require("../utilities/payment.js");
 
 module.exports = {
   signUp(req, res, next) {
@@ -32,8 +33,8 @@ module.exports = {
             req.flash("error", err);
             res.redirect("/users/sign_up");
           } else {
-            // #3
             passport.authenticate("local")(req, res, () => {
+              email(newUser.username, newUser.email);
               req.flash("notice", "You've successfully signed in!");
               res.redirect("/");
             });
@@ -47,6 +48,7 @@ module.exports = {
   },
   signIn(req, res, next) {
     passport.authenticate("local")(req, res, () => {
+      console.log(req.user);
       if (!req.user) {
         req.flash("notice", "Sign in failed. Please try again.");
         res.redirect("/users/sign_in");
@@ -60,5 +62,39 @@ module.exports = {
     req.logout();
     req.flash("notice", "You've successfully signed out!");
     res.redirect("/");
+  },
+  showAccount(req, res, next) {
+    if (!req.user) {
+      req.flash("notice", "You must be signed in to do that.");
+      res.redirect("/users/sign_in");
+    } else {
+      res.render("users/account");
+    }
+  },
+  upgrade(req, res, next) {
+    const token = req.body.stripeToken;
+    payment(req.user.email, token, (err, charge) => {
+      console.log(charge);
+      if (charge["paid"] === true) {
+        userQueries.upgradeUser(req, (err, user) => {
+          if (err || user === null) {
+            req.flash("error", err);
+            res.redirect("/users/sign_up");
+          } else {
+            req.flash("notice", "Thanks for upgrading your account!");
+            res.redirect("/");
+          }
+        });
+      } else {
+        req.flash("Your payment was not sucessful. Please try again");
+        res.redirect("/users/account");
+      }
+    });
+  },
+  downgrade(req, res, next) {
+    userQueries.downgradeUser(req, (err, user) => {
+      req.flash("notice", "You have downgraded your account");
+      res.redirect("/");
+    });
   }
 };
