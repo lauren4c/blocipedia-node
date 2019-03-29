@@ -4,7 +4,7 @@ const faker = require("faker");
 let users = [
   {
     id: 5,
-    username: faker.lorem.word(),
+    username: faker.internet.userName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
     role: 0,
@@ -13,7 +13,7 @@ let users = [
   },
   {
     id: 6,
-    username: faker.lorem.word(),
+    username: faker.internet.userName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
     role: 0,
