@@ -8,7 +8,7 @@ for (let i = 1; i <= 10; i++) {
   wikis.push({
     title: faker.hacker.phrase(),
     body: faker.lorem.sentence(),
-    userId: 5,
+    userId: 325,
     private: false,
     createdAt: new Date(),
     updatedAt: new Date()
