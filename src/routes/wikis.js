@@ -5,6 +5,7 @@ const validation = require("./validation");
 const wikiController = require("../controllers/wikiController");
 
 router.get("/wikis", wikiController.index);
+router.get("/wikis/private", wikiController.showPrivate);
 router.get("/wikis/new", wikiController.new);
 router.post(
   "/wikis/create",

@@ -29,9 +29,9 @@ describe("routes : wikis", () => {
       });
     });
   });
-  describe("CRUD actions for Wiki", () => {
+  describe("CRUD actions for Wiki for a standard users", () => {
     describe("GET /wikis", () => {
-      it("should return a status code 200 and all wikis", done => {
+      it("should return a status code 200 and all public wikis", done => {
         //#3
         request.get(base, (err, res, body) => {
           expect(res.statusCode).toBe(200);
@@ -42,15 +42,6 @@ describe("routes : wikis", () => {
       });
     });
     describe("GET /wikis/new", () => {
-      it("should render a new wiki form", done => {
-        request.get(`${base}new`, (err, res, body) => {
-          expect(err).toBeNull();
-          expect(body).toContain("New Wiki");
-          done();
-        });
-      });
-    });
-    describe("POST /wikis/create", () => {
       beforeEach(done => {
         User.create({
           email: "member@example.com",
@@ -73,6 +64,15 @@ describe("routes : wikis", () => {
           );
         });
       });
+      it("should render a new wiki form", done => {
+        request.get(`${base}new`, (err, res, body) => {
+          expect(err).toBeNull();
+          expect(body).toContain("New Wiki");
+          done();
+        });
+      });
+    });
+    describe("POST /wikis/create", () => {
       it("should create a new wiki and redirect", done => {
         const options = {
           url: `${base}create`,
@@ -164,6 +164,114 @@ describe("routes : wikis", () => {
             where: { id: this.wiki.id }
           }).then(wiki => {
             expect(wiki.title).toBe("What is a Snowman?");
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  //tests for premium uses
+  describe("actions for premium users", () => {
+    describe("GET /wikis/new", () => {
+      beforeEach(done => {
+        User.create({
+          email: "premium@example.com",
+          password: "123456",
+          username: "Special"
+        }).then(user => {
+          request.get(
+            {
+              // mock authentication
+              url: "http://localhost:3000/auth/fake",
+              form: {
+                username: this.user.username, // mock authenticate as a user
+                userId: this.user.id,
+                email: this.user.email,
+                role: 1
+              }
+            },
+            (err, res, body) => {
+              done();
+            }
+          );
+        });
+      });
+      it("should render a new wiki form", done => {
+        request.get(`${base}new`, (err, res, body) => {
+          expect(err).toBeNull();
+          expect(body).toContain("New Wiki");
+          done();
+        });
+      });
+    });
+    describe("POST /wikis/create", () => {
+      it("should create a new PRIVATE wiki and redirect", done => {
+        const options = {
+          url: `${base}create`,
+          form: {
+            title: "Watching snow melt",
+            body:
+              "Without a doubt my favoriting things to do besides watching paint dry!",
+            private: true
+          }
+        };
+        request.post(options, (err, res, body) => {
+          Wiki.findOne({ where: { title: "Watching snow melt" } })
+            .then(wiki => {
+              expect(wiki).not.toBeNull();
+              expect(wiki.title).toBe("Watching snow melt");
+              expect(wiki.body).toBe(
+                "Without a doubt my favoriting things to do besides watching paint dry!"
+              );
+              expect(wiki.userId).not.toBeNull();
+              expect(wiki.private).toBe(true);
+              done();
+            })
+            .catch(err => {
+              console.log(err);
+              done();
+            });
+        });
+      });
+    });
+
+    describe("POST wikis/:id/update", () => {
+      it("should update the wiki and make it public", done => {
+        request.post(
+          {
+            url: `${base}${this.wiki.id}/update`,
+            form: {
+              title: "What is a Snowman?",
+              body: "Is it when a human is outside in the snow?",
+              private: false
+            }
+          },
+          (err, res, body) => {
+            expect(res.statusCode).toBe(302);
+            done();
+          }
+        );
+      });
+
+      it("should update the wiki and make it public", done => {
+        const options = {
+          url: `${base}${this.wiki.id}/update`,
+          form: {
+            title: "What is a Snowman?",
+            body: this.wiki.body,
+            private: this.wiki.private
+          }
+        };
+        request.post(options, (err, res, body) => {
+          expect(err).toBeNull();
+
+          Wiki.findOne({
+            where: { id: this.wiki.id }
+          }).then(wiki => {
+            expect(wiki.title).toBe("What is a Snowman?");
+            expect(wiki.private).toBe(false);
+
             done();
           });
         });

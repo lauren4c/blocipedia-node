@@ -122,20 +122,6 @@ describe("routes : users", () => {
           });
         });
       });
-      // describe("POST /users/downgrade", () => {
-      //   it("should downgrade user role and redirect", done => {
-      //     User.findOne({ where: { email: "member@premium.com" } })
-      //
-      //       .then(user => {
-      //         expect(user.role).toBe(0);
-      //         done();
-      //       })
-      //       .catch(err => {
-      //         console.log(err);
-      //         done();
-      //       });
-      //   });
-      // });
     });
   });
 });

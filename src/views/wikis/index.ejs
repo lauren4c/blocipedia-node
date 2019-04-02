@@ -10,6 +10,9 @@
        <% if(currentUser) {%>
   <a href="/wikis/new" class="btn btn-success">New Wiki</a>
  <% } %>
+    <%if( (currentUser) && (currentUser.role > 0)) { %>
+<a href="/wikis/private" class="btn btn-warning">View my Priviate Wikis</a>
+<% } %>
       <ul class="list-group">
 <!-- #1 -->
         <% wikis.forEach((wiki) => { %>

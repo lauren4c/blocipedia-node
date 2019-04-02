@@ -3,6 +3,7 @@ const passport = require("passport");
 const email = require("../utilities/email.js");
 const User = require("../db/models").User;
 const payment = require("../utilities/payment.js");
+const wikiController = require("./wikiController.js");
 
 module.exports = {
   signUp(req, res, next) {
@@ -92,8 +93,12 @@ module.exports = {
     });
   },
   downgrade(req, res, next) {
+    wikiController.makeAllPublic(req, res, next);
     userQueries.downgradeUser(req, (err, user) => {
-      req.flash("notice", "You have downgraded your account");
+      req.flash(
+        "notice",
+        "You have downgraded your account & your wikis are all public"
+      );
       res.redirect("/");
     });
   }
