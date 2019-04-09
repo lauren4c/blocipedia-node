@@ -1,42 +1,38 @@
 const wikiQueries = require("../db/queries.wikis.js");
 const Authorizer = require("../policies/wiki");
+const User = require("../db/models").User;
 const markdown = require("markdown").markdown;
+const collaboratorQueries = require("../db/queries.collaborators.js");
 
 module.exports = {
   index(req, res, next) {
-    wikiQueries.getAllPublicWikis((err, wikis) => {
-      if (err) {
-        res.redirect(500, "static/index");
-      } else {
-        res.render("wikis/index", { wikis });
-      }
-    });
-  },
-  showPrivate(req, res, next) {
-    const authorized = new Authorizer(req.user).private();
-    if (authorized) {
-      wikiQueries.privateWikis(req.user, (err, wikis) => {
+    if (!req.user) {
+      wikiQueries.getAllPublicWikis((err, wikis) => {
+        if (err) {
+          res.redirect(500, "static/index");
+        } else {
+          res.render("wikis/index", { wikis });
+        }
+      });
+    } else {
+      wikiQueries.privateWikis(req.user.id, (err, wikis) => {
         if (err) {
           console.log(err);
           res.redirect(500, "static/index");
           req.flash("error", err);
         } else {
-          res.render("wikis/private", { wikis });
+          res.render("wikis/index", { wikis });
         }
       });
-    } else {
-      req.flash("notice", "You are not authorized to do that.");
-      res.redirect("/wikis");
     }
   },
 
   new(req, res, next) {
     const authorized = new Authorizer(req.user).new();
-
     if (authorized) {
       res.render("wikis/new");
     } else {
-      req.flash("notice", "You are not authorized to do that.");
+      req.flash("notice", "You must have an account to create new wikis.");
       res.redirect(`/wikis/index`);
     }
   },
@@ -70,23 +66,37 @@ module.exports = {
   },
 
   show(req, res, next) {
-    const authorized = new Authorizer(req.user).show();
-    if (authorized) {
-      wikiQueries.getWiki(req.params.id, (err, wiki) => {
-        if (err || wiki == null) {
-          res.redirect(404, "/");
-        } else {
-          res.render("wikis/show", { wiki, markdown });
-        }
-      });
-    } else {
-      req.flash("notice", "You are not authorized to do that.");
-      res.redirect("/wikis/index");
-    }
+    wikiQueries.getWiki(req.params.id, (err, wiki) => {
+      if (err || wiki == null) {
+        res.redirect(404, "/");
+      } else if (wiki.private === false) {
+        console.log("this is a public wiki ");
+        res.render("wikis/show", { wiki, markdown });
+      } else if (wiki.private === true) {
+        collaboratorQueries.checkCollaborator(
+          wiki.id,
+          req.user.id,
+          (err, collaborator) => {
+            console.log(err, collaborator);
+            if (err || collaborator === null) {
+              req.flash(
+                "notice",
+                "You do not have permission to view this wiki."
+              );
+              res.redirect("/wikis");
+            } else {
+              res.render("wikis/show", { wiki, markdown });
+            }
+          }
+        );
+      } else {
+        req.flash("notice", "You are not authorized to do that.");
+        res.redirect(`/wikis/index`);
+      }
+    });
   },
   update(req, res, next) {
     wikiQueries.updateWiki(req, req.body, (err, wiki) => {
-      console.log(req.body);
       if (err || wiki == null) {
         res.redirect(401, `/wikis/${req.params.id}/edit`);
       } else {
@@ -106,12 +116,32 @@ module.exports = {
       }
     });
   },
+
   edit(req, res, next) {
     wikiQueries.getWiki(req.params.id, (err, wiki) => {
       if (err || wiki == null) {
         res.redirect(404, "/");
-      } else {
+      } else if (wiki.private === false) {
         res.render("wikis/edit", { wiki });
+      } else if (wiki.private === true) {
+        collaboratorQueries.checkCollaborator(
+          wiki.id,
+          req.user.id,
+          (err, collaborator) => {
+            if (err || !collaborator) {
+              req.flash(
+                "notice",
+                "You do not have permission to view this wiki."
+              );
+              res.redirect("/wikis");
+            } else {
+              res.render("wikis/edit", { wiki });
+            }
+          }
+        );
+      } else {
+        req.flash("notice", "You are not authorized to do that.");
+        res.redirect(`/wikis/index`);
       }
     });
   },

@@ -30,11 +30,19 @@ module.exports = class ApplicationPolicy {
   }
 
   show() {
-    return true;
+    if (this.record.private == true) {
+      return this.new() && this._isOwner();
+    } else {
+      return this.new();
+    }
   }
 
   edit() {
-    return this.new() && this.record;
+    if (this.record.private == true) {
+      return this.new() && this._isOwner();
+    } else {
+      return this.new() && this.record;
+    }
   }
 
   update() {

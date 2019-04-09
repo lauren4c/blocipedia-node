@@ -21,7 +21,8 @@ describe("routes : wikis", () => {
         Wiki.create({
           title: "Winter Sucks",
           body: "I want to go outside",
-          userId: this.user.id
+          userId: this.user.id,
+          private: false
         }).then(wiki => {
           this.wiki = wiki;
           done();
@@ -29,7 +30,7 @@ describe("routes : wikis", () => {
       });
     });
   });
-  describe("CRUD actions for Wiki for a standard users", () => {
+  describe("CRUD actions for Public Wiki for a standard users", () => {
     describe("GET /wikis", () => {
       it("should return a status code 200 and all public wikis", done => {
         //#3
@@ -46,7 +47,8 @@ describe("routes : wikis", () => {
         User.create({
           email: "member@example.com",
           password: "123456",
-          username: "Steve"
+          username: "Steve",
+          role: 0
         }).then(user => {
           request.get(
             {
@@ -55,7 +57,8 @@ describe("routes : wikis", () => {
               form: {
                 username: this.user.username, // mock authenticate as a user
                 userId: this.user.id,
-                email: this.user.email
+                email: this.user.email,
+                role: this.user.role
               }
             },
             (err, res, body) => {
@@ -113,7 +116,7 @@ describe("routes : wikis", () => {
       it("should delete the wiki with the associated ID", done => {
         expect(this.wiki.id).toBe(1);
         request.post(`${base}${this.wiki.id}/destroy`, (err, res, body) => {
-          Wiki.findById(1).then(wiki => {
+          Wiki.findByPk(1).then(wiki => {
             expect(err).toBeNull();
             expect(wiki).toBeNull();
             done();
@@ -178,7 +181,8 @@ describe("routes : wikis", () => {
         User.create({
           email: "premium@example.com",
           password: "123456",
-          username: "Special"
+          username: "Special",
+          role: 1
         }).then(user => {
           request.get(
             {
@@ -213,7 +217,8 @@ describe("routes : wikis", () => {
             title: "Watching snow melt",
             body:
               "Without a doubt my favoriting things to do besides watching paint dry!",
-            private: true
+            private: true,
+            userId: this.user.id
           }
         };
         request.post(options, (err, res, body) => {
@@ -244,7 +249,8 @@ describe("routes : wikis", () => {
             form: {
               title: "What is a Snowman?",
               body: "Is it when a human is outside in the snow?",
-              private: false
+              private: false,
+              userId: this.user.id
             }
           },
           (err, res, body) => {
@@ -260,7 +266,8 @@ describe("routes : wikis", () => {
           form: {
             title: "What is a Snowman?",
             body: this.wiki.body,
-            private: this.wiki.private
+            private: this.wiki.private,
+            userId: this.user.id
           }
         };
         request.post(options, (err, res, body) => {

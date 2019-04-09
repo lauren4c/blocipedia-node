@@ -19,17 +19,24 @@ module.exports = class WikiPolicy extends ApplicationPolicy {
 
   update() {
     if (this.record.private == true) {
-      return this.edit() && this._isOwner();
+      return this.new() && this._isOwner();
     } else {
-      return this.edit();
+      return this.new();
+    }
+  }
+  update() {
+    if (this.record.private == true) {
+      return this.new() && this._isOwner();
+    } else {
+      return this.new();
     }
   }
 
   destroy() {
     if (this.record.private == true) {
-      return this.update() && this._isOwner();
+      return this.new() && this._isOwner();
     } else {
-      return this.update();
+      return this.new();
     }
   }
 
@@ -38,6 +45,10 @@ module.exports = class WikiPolicy extends ApplicationPolicy {
   }
 
   showPrivate() {
-    return this.new() && this._isOwner();
+    if (this.record.private == true) {
+      return this._isOwner() || this._isAdmin();
+    } else {
+      return this.show();
+    }
   }
 };

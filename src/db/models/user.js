@@ -30,6 +30,14 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "userId",
       as: "wikis"
     });
+    User.hasMany(models.Collaborator, {
+      foreignKey: "wikiOwner",
+      as: "collaboratorOwner"
+    });
+    User.hasMany(models.Collaborator, {
+      foreignKey: "collaboratorId",
+      as: "collaborator"
+    });
   };
   return User;
 };

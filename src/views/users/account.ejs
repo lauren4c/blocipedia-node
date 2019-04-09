@@ -34,7 +34,11 @@
           <form style="display:initial" action="/users/downgrade" method="post">
             <button type="submit" class="btn btn-danger">Downgrade</button>
           </form>
-      <% } %>    </main>
+
+      <% } %>
+      <hr>
+<p>Want to Collaborate? Your user ID is:<strong> <%- currentUser.id %></strong></p>
+     </main>
 
     <% include ../static/partials/baseScripts.ejs %>
 
