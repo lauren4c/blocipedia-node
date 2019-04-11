@@ -74,7 +74,6 @@ module.exports = {
   upgrade(req, res, next) {
     const token = req.body.stripeToken;
     payment(req.user.email, token, (err, charge) => {
-      console.log(charge);
       if (charge["paid"] === true) {
         userQueries.upgradeUser(req, (err, user) => {
           if (err || user === null) {

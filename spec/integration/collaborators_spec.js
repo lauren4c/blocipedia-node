@@ -50,6 +50,7 @@ describe("routes : collaborators", () => {
               wikiId: this.wiki.id,
               wikiOwner: this.premiumUser.id
             }).then(collaborator => {
+              console.log(collaborator);
               this.collaborator = collaborator;
               done();
             });
@@ -58,83 +59,32 @@ describe("routes : collaborators", () => {
       });
     });
   });
-  // describe("standard user attempting to set a collaborator", () => {
-  //   beforeEach(done => {
-  //     User.create({
-  //       email: "member@standard.com",
-  //       username: "standard",
-  //       password: "123456",
-  //       role: 0
-  //     }).then(user => {
-  //       request.get(
-  //         {
-  //           url: "http://localhost:3000/auth/fake",
-  //           form: {
-  //             email: this.user.email,
-  //             password: this.user.password,
-  //             role: this.user.role
-  //           }
-  //         },
-  //         (err, res, body) => {
-  //           done();
-  //         }
-  //       );
-  //     });
-  //   });
-
-  // describe("POST /wikis/:wikiId/collaborators/create", () => {
-  //   it("should not create a new collaborator", done => {
-  //     const options = {
-  //       url: `${base}${this.wiki.id}/collaborators/create`,
-  //       form: {
-  //         collaboratorId: this.user.id,
-  //         wikiId: this.wiki.id,
-  //         wikiOwner: this.user.id
-  //       }
-  //     };
-  //     let collabCountBeforeCreate;
-  //     this.wiki.getCollaboratorsFor(this.wiki.id).then(collaborators => {
-  //       collabCountBeforeCreate = collaborators.length;
-  //
-  //       request.post(options, (err, res, body) => {
-  //         Collaborator.findAll({ where: { wikiId: this.wiki.id } })
-  //           .then(collaborator => {
-  //             expect(collabCountBeforeCreate).toBe(collaborator.length); // confirm no collaborators created
-  //             done();
-  //           })
-  //           .catch(err => {
-  //             console.log(err);
-  //             done();
-  //           });
-  //       });
-  //     });
-  //   });
-  // });
 
   //tests for Premium User
   describe("Premium User Adding and removing collaborators", () => {
     beforeEach(done => {
       User.create({
-        email: "member@premium.com",
-        username: "Premium",
+        username: "user",
+        email: "standard@user.com",
         password: "123456",
-        role: 1
+        role: 0
       }).then(user => {
-        request.get(
-          {
-            // mock authentication
-            url: "http://localhost:3000/auth/fake",
-            form: {
-              role: 1, // mock authenticate as a premium user
-              email: this.premiumUser.email,
-              password: this.premiumUser.password
-            }
-          },
-          (err, res, body) => {
-            done();
-          }
-        );
+        this.user = user;
       });
+      request.get(
+        {
+          // mock authentication
+          url: "http://localhost:3000/auth/fake",
+          form: {
+            email: this.premiumUser.email,
+            userId: this.premiumUser.id,
+            username: this.premiumUser.username
+          }
+        },
+        (err, res, body) => {
+          done();
+        }
+      );
     });
 
     describe("POST /wikis/:id/collaborators/create", () => {
@@ -142,7 +92,7 @@ describe("routes : collaborators", () => {
         const options = {
           url: `${base}${this.wiki.id}/collaborators/create`,
           form: {
-            collaboratorId: this.standardUser.id,
+            collaboratorId: this.user.id,
             wikiId: this.wiki.id,
             wikiOwner: this.premiumUser.id
           }
@@ -152,7 +102,7 @@ describe("routes : collaborators", () => {
 
           Collaborator.findOne({
             where: {
-              collaboratorId: this.standardUser.id,
+              collaboratorId: this.user.id,
               wikiId: this.wiki.id,
               wikiOwner: this.premiumUser.id
             }
@@ -180,9 +130,6 @@ describe("routes : collaborators", () => {
             wikiOwner: this.premiumUser.id
           }
         }).then(collaborator => {
-          console.log(
-            "this is the collaborator that should be removed " + collaborator.id
-          );
           const options = {
             url: `${base}${this.wiki.id}/collaborators/destroy`,
             form: {
@@ -199,7 +146,6 @@ describe("routes : collaborators", () => {
               }
             })
               .then(collaborator => {
-                console.log(collaborator.id);
                 expect(collaborator).toBeNull();
                 done();
               })

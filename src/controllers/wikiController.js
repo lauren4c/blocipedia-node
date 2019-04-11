@@ -51,8 +51,6 @@ module.exports = {
         private: isPrivate(req.body.private)
       };
       wikiQueries.addWiki(newWiki, (err, wiki) => {
-        console.log(newWiki);
-
         if (err) {
           res.redirect(500, "/wikis/new");
         } else {
@@ -70,14 +68,12 @@ module.exports = {
       if (err || wiki == null) {
         res.redirect(404, "/");
       } else if (wiki.private === false) {
-        console.log("this is a public wiki ");
         res.render("wikis/show", { wiki, markdown });
       } else if (wiki.private === true) {
         collaboratorQueries.checkCollaborator(
           wiki.id,
           req.user.id,
           (err, collaborator) => {
-            console.log(err, collaborator);
             if (err || collaborator === null) {
               req.flash(
                 "notice",

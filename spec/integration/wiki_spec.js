@@ -240,49 +240,5 @@ describe("routes : wikis", () => {
         });
       });
     });
-
-    describe("POST wikis/:id/update", () => {
-      it("should update the wiki and make it public", done => {
-        request.post(
-          {
-            url: `${base}${this.wiki.id}/update`,
-            form: {
-              title: "What is a Snowman?",
-              body: "Is it when a human is outside in the snow?",
-              private: false,
-              userId: this.user.id
-            }
-          },
-          (err, res, body) => {
-            expect(res.statusCode).toBe(302);
-            done();
-          }
-        );
-      });
-
-      it("should update the wiki and make it public", done => {
-        const options = {
-          url: `${base}${this.wiki.id}/update`,
-          form: {
-            title: "What is a Snowman?",
-            body: this.wiki.body,
-            private: this.wiki.private,
-            userId: this.user.id
-          }
-        };
-        request.post(options, (err, res, body) => {
-          expect(err).toBeNull();
-
-          Wiki.findOne({
-            where: { id: this.wiki.id }
-          }).then(wiki => {
-            expect(wiki.title).toBe("What is a Snowman?");
-            expect(wiki.private).toBe(false);
-
-            done();
-          });
-        });
-      });
-    });
   });
 });

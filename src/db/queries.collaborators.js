@@ -20,7 +20,6 @@ module.exports = {
   },
   destroyCollaborator(req, callback) {
     const id = parseInt(req.body.collaboratorId, 10);
-
     return Collaborator.findOne({
       where: {
         wikiId: req.params.wikiId,
@@ -32,25 +31,15 @@ module.exports = {
         if (!collaborator) {
           return callback("Collaborator not found");
         }
-        const authorized = new Authorizer(
-          req.user,
-          null,
-          collaborator
-        ).destroy();
 
-        if (authorized) {
-          collaborator
-            .destroy()
-            .then(res => {
-              callback(null, collaborator);
-            })
-            .catch(err => {
-              callback(err);
-            });
-        } else {
-          req.flash("notice", "You are not authorized to do that.");
-          callback(401);
-        }
+        collaborator
+          .destroy()
+          .then(res => {
+            callback(null, collaborator);
+          })
+          .catch(err => {
+            callback(err);
+          });
       })
       .catch(err => {
         console.log(err);

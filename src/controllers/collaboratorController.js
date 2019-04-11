@@ -10,46 +10,44 @@ module.exports = {
       wikiId: req.params.wikiId,
       wikiOwner: req.user.id
     };
-    const authorized = new Authorizer(req.user).create();
-    if (authorized) {
-      User.findOne({
-        where: {
-          id: req.user.id
-        }
-      }).then(user => {
-        if (!user) {
-          req.flash("notice", "Please enter a valid user ID.");
-          res.redirect(req.headers.referer);
-        } else {
-          Collaborator.findOne({
-            where: {
-              wikiId: req.params.wikiId,
-              wikiOwner: req.user.id,
-              collaboratorId: req.body.collaboratorId
-            }
-          }).then(collaborator => {
-            if (collaborator) {
-              req.flash("notice", "Already a collaborator");
-              res.redirect(req.headers.referer);
-            } else {
-              collaboratorQueries.createCollaborator(
-                newCollaborator,
-                (err, collaborator) => {
-                  if (err) {
-                    console.log(err);
-                    req.flash("error", err);
-                    res.redirect(req.headers.referer);
-                  } else {
-                    req.flash("notice", "You've added a collaborator");
-                    res.redirect(req.headers.referer);
-                  }
+
+    User.findOne({
+      where: {
+        id: req.user.id
+      }
+    }).then(user => {
+      if (!user) {
+        req.flash("notice", "Please enter a valid user ID.");
+        res.redirect(req.headers.referer);
+      } else {
+        Collaborator.findOne({
+          where: {
+            wikiId: req.params.wikiId,
+            wikiOwner: req.user.id,
+            collaboratorId: req.body.collaboratorId
+          }
+        }).then(collaborator => {
+          if (collaborator) {
+            req.flash("notice", "Already a collaborator");
+            res.redirect(req.headers.referer);
+          } else {
+            collaboratorQueries.createCollaborator(
+              newCollaborator,
+              (err, collaborator) => {
+                if (err) {
+                  console.log(err);
+                  req.flash("error", err);
+                  res.redirect(req.headers.referer);
+                } else {
+                  req.flash("notice", "You've added a collaborator");
+                  res.redirect(req.headers.referer);
                 }
-              );
-            }
-          });
-        }
-      });
-    }
+              }
+            );
+          }
+        });
+      }
+    });
   },
 
   destroy(req, res, next) {
